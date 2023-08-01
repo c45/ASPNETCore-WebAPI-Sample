@@ -14,7 +14,7 @@ variables:
   imageRepository: 'application'
   containerRegistry: 'prodbestrongregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
+  tag: 'latest'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -37,3 +37,10 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+
+- stage: Deploy
+  jobs:
+    - job: Deploy
+      pool:
+        vmImage: $(vmImageName)       
+      steps:
