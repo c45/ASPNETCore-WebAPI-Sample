@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  application:
+    image: prodbestrongregistry.azurecr.io/application:latest
+    container_name: application
+    ports:
+      - 80:80
