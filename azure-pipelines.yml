@@ -14,7 +14,7 @@ variables:
   imageRepository: 'application'
   containerRegistry: 'prodbestrongregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-
+  tag: '$(Build.BuildId)'
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -34,6 +34,26 @@ stages:
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
-        tags: 'latest'
+        tags: |
+          $(tag)
+
+- stage: Deploy
+  jobs:
+    - job: Deploy
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+      - task: AzureRmWebAppDeployment@4
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'PipelineConnection'
+          appType: 'webAppContainer'
+          WebAppName: 'prodbestrongapp'
+          deployToSlotOrASE: true
+          ResourceGroupName: 'prod'
+          SlotName: 'production'
+          DockerNamespace: 'prodbestrongregistry.azurecr.io'
+          DockerRepository: 'application'
+          DockerImageTag: '$(tag)'
 
 
