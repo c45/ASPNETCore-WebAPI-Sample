@@ -12,8 +12,9 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'fbed2136-d61b-4f25-8091-48ea362f93e1'
   imageRepository: 'application'
-  containerRegistry: 'prodbestrongregistry.azurecr.io'
+  containerRegistry: 'devbestrongregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  imageTag: $(Build.BuildId)
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -26,14 +27,13 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: ACRTask@0
+    - task: Docker@2
+      displayName: Build and push an image to container registry
       inputs:
-        azureSubscription: 'PipelineConnection'
-        azureContainerRegistry: 'devbestrongregistry'
-        containerRepository: 'application'
-        contextType: 'Git'
-        githubConnection: 'repo'
-        repositoryName: 'c45/ASPNETCore-WebAPI-Sample'
-        branch: 'main'
-        dockerfileOrTaskFile: '$(dockerfilePath)'
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(imageTag)
 
