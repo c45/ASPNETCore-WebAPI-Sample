@@ -28,13 +28,14 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
+    - task: ACRTask@0
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(containerRegistry)
-        tags: |
-          $(imageTag)
+        azureSubscription: 'Azure subscription 1(87ed7345-6e20-4565-844b-70b8b682de46)'
+        azureContainerRegistry: 'devbestrongregistry'
+        containerRepository: 'application'
+        contextType: 'Git'
+        githubConnection: 'repo'
+        repositoryName: 'c45/ASPNETCore-WebAPI-Sample'
+        branch: 'main'
+        dockerfileOrTaskFile: 'Dockerfile'
 
