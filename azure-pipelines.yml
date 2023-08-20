@@ -32,8 +32,8 @@ stages:
         azureContainerRegistry: 'devbestrongregistry'
         containerRepository: 'application'
         contextType: 'Git'
-        githubConnection: 'Github'
+        githubConnection: 'repo'
         repositoryName: 'c45/ASPNETCore-WebAPI-Sample'
         branch: 'main'
-        dockerfileOrTaskFile: 'Dockerfile'
+        dockerfileOrTaskFile: '$(dockerfilePath)'
 
