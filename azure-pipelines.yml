@@ -11,9 +11,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'fbed2136-d61b-4f25-8091-48ea362f93e1'
   imageRepository: 'application'
-  containerRegistry: 'devbestrongregistry.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   imageTag: $(Build.BuildId)
   # Agent VM image name
@@ -28,14 +26,12 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: ACRTask@0
+    - task: Docker@2
+      displayName: Build and push an image to container registry
       inputs:
-        azureSubscription: 'Azure subscription 1(87ed7345-6e20-4565-844b-70b8b682de46)'
-        azureContainerRegistry: 'devbestrongregistry'
-        containerRepository: 'application'
-        contextType: 'Git'
-        githubConnection: 'repo'
-        repositoryName: 'c45/ASPNETCore-WebAPI-Sample'
-        branch: 'main'
-        dockerfileOrTaskFile: 'Dockerfile'
+        containerRegistry: 'acr'
+        repository: '$(imageRepository)'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(imageTag)'
 
