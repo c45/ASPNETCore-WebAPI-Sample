@@ -1,0 +1,7 @@
+application:
+  replica_count: 2
+  image:
+    repository: c455/application
+    tag: v0.1
+  service:
+    type: LoadBalancer  
