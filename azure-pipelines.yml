@@ -58,6 +58,6 @@ stages:
         chartName: 'helm'
         chartVersion: '0.3.1'
         releaseName: 'application'
-        overrideValues: 'application.image.tag=$(Build.BuildId)'
+        overrideValues: 'Values.application.image.tag=$(Build.BuildId)'
 
 
