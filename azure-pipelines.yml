@@ -50,8 +50,7 @@ stages:
 
     - script: |
         helm registry login $(ACR_NAME).azurecr.io --username $(ACR_NAME) --password $(ACR_PASSWORD)
-        helm pull oci://$(ACR_NAME).azurecr.io/helm 
-      displayName: Pull Helm Chart from ACR
+      displayName: Login to Helm Registry
 
 
     - task: HelmDeploy@0
@@ -64,7 +63,7 @@ stages:
         namespace: 'default'
         command: 'upgrade'
         chartType: 'Name'
-        chartName: 'helm'
+        chartName: 'oci://devbestrongregistry.azurecr.io/helm'
         chartVersion: '1.3.1'
         releaseName: 'application'
         overrideValues: 'image.tag=$(Build.BuildId)'
