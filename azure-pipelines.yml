@@ -21,7 +21,6 @@ variables:
   # Container registry service connection established during pipeline creation
   imageRepository: 'application'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  imageTag:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -41,7 +40,7 @@ stages:
         repository: '$(imageRepository)'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-        tags: '$(imageTag)'
+        tags: $(Build.BuildId)
 
     - task: HelmInstaller@0
       inputs:
