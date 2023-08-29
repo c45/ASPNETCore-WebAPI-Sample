@@ -43,25 +43,19 @@ stages:
         Dockerfile: '**/Dockerfile'
         tags: '$(imageTag)'
 
-    - task: HelmInstaller@0
+    - task: downloader@1
       inputs:
+        k8sService: 'AKS'
+        hasIstio: false
         helmVersion: '3.6.0'
-        checkLatestHelmVersion: false
-        installKubectl: true
-    - task: HelmDeploy@0
+
+    - task: helm@1
       inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscription: 'PipelineConnection'
-        azureResourceGroup: 'default'
-        kubernetesCluster: 'default-bestrong-aks'
-        useClusterAdmin: true
-        namespace: 'default'
-        command: 'upgrade'
-        chartType: 'Name'
-        chartName: 'oci://devbestrongregistry.azurecr.io/helm'
-        chartVersion: '1.3.1'
-        releaseName: 'application'
-        overrideValues: 'image.tag=$(Build.BuildId)'
+        subCommand: 'upgrade application oci://devbestrongregistry.azurecr.io/helm'
+        arguments: |
+          --version 1.3.1
+          --set image.tag=$(Build.BuildId)
+          --reuse-values
         
 
 
