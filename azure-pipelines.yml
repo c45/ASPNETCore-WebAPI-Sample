@@ -71,43 +71,52 @@ stages:
           overrideValues: 'image.tag=$(Build.BuildId)'
           arguments: '--reuse-values'
 
-- stage: Promote
-  dependsOn: Deploy
-  jobs:
   - job: Approve
     pool: server
     steps:
       - task: ManualValidation@0
         inputs:
           notifyUsers: 'Promote new version?'
+  
+  - job: Install_Plugin
+    displayName: Install Argo Rollouts
+    steps:
+      - script: |
+          curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+          chmod +x ./kubectl-argo-rollouts-linux-amd64
+          sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+          
 
   - job: Promote
     dependsOn: Approve
     steps:
+      - task: HelmDeploy@0
+        inputs:
+          connectionType: 'Azure Resource Manager'
+          azureSubscription: 'PipelineConnection'
+          azureResourceGroup: 'default'
+          kubernetesCluster: 'default-bestrong-aks'
+          useClusterAdmin: true
+          namespace: 'default'
+          command: 'ls'
       - script: |
-          curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
-          chmod +x ./kubectl-argo-rollouts-linux-amd64
-          sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
           kubectl argo rollouts promote application
 
-- stage: Rollback
-  dependsOn: Promote
-  jobs:
-  - job: Approve
-    pool: server
-    steps:
-      - task: ManualValidation@0
-        inputs:
-          notifyUsers: 'Rollback to older version?'
+# - stage: Rollback
+#   dependsOn: Promote
+#   jobs:
+#   - job: Approve
+#     pool: server
+#     steps:
+#       - task: ManualValidation@0
+#         inputs:
+#           notifyUsers: 'Rollback to older version?'
 
-  - job: Rollback
-    dependsOn: Approve
-    steps:
-      - script: |
-          curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
-          chmod +x ./kubectl-argo-rollouts-linux-amd64
-          sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
-          kubectl argo rollouts undo application
+#   - job: Rollback
+#     dependsOn: Approve
+#     steps:
+#       - script: |
+#           kubectl argo rollouts undo application
 
 
 
