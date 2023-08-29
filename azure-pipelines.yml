@@ -57,7 +57,7 @@ stages:
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Azure Resource Manager'
-        azureSubscription: 'Azure subscription 1(87ed7345-6e20-4565-844b-70b8b682de46)'
+        azureSubscription: 'PipelineConnection'
         azureResourceGroup: 'default'
         kubernetesCluster: 'default-bestrong-aks'
         useClusterAdmin: true
