@@ -60,8 +60,8 @@ stages:
         inputs:
           connectionType: 'Azure Resource Manager'
           azureSubscription: 'PipelineConnection'
-          azureResourceGroup: 'default'
-          kubernetesCluster: 'default-bestrong-aks'
+          azureResourceGroup: '$(RESOURCE_GROUP)'
+          kubernetesCluster:  '$(CLUSTER)'
           useClusterAdmin: true
           namespace: 'default'
           command: 'upgrade'
@@ -72,6 +72,7 @@ stages:
           arguments: '--reuse-values'
 
   - job: Approve
+    dependsOn: Deploy
     pool: server
     steps:
       - task: ManualValidation@0
@@ -85,22 +86,23 @@ stages:
           curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
           chmod +x ./kubectl-argo-rollouts-linux-amd64
           sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
-          
+  
 
   - job: Promote
     dependsOn: Approve
     steps:
-      - task: HelmDeploy@0
+      - task: AzureCLI@2
+        displayName: Get AKS credentials
         inputs:
-          connectionType: 'Azure Resource Manager'
           azureSubscription: 'PipelineConnection'
-          azureResourceGroup: 'default'
-          kubernetesCluster: 'default-bestrong-aks'
-          useClusterAdmin: true
-          namespace: 'default'
-          command: 'ls'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: 'az aks get-credentials'
+          arguments: '-g $(RESOURCE_GROUP) -n $(CLUSTER)'
+
       - script: |
           kubectl argo rollouts promote application
+        displayName: Promote
 
 # - stage: Rollback
 #   dependsOn: Promote
@@ -116,7 +118,7 @@ stages:
 #     dependsOn: Approve
 #     steps:
 #       - script: |
-#           kubectl argo rollouts undo application
+#           kubectl argo rollouts abort application
 
 
 
