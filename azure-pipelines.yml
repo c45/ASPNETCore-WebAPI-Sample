@@ -58,7 +58,7 @@ stages:
         namespace: 'default'
         command: 'upgrade'
         chartType: 'Name'
-        chartName: 'helm'
+        chartName: 'oci://devbestrongregistry.azurecr.io/helm'
         chartVersion: '1.3.1'
         releaseName: 'application'
         overrideValues: 'image.tag=$(Build.BuildId)'
