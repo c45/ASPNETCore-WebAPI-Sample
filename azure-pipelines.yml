@@ -97,8 +97,7 @@ stages:
           azureSubscription: 'PipelineConnection'
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: 'az aks get-credentials'
-          arguments: '-g $(RESOURCE_GROUP) -n $(CLUSTER)'
+          inlineScript: 'az aks get-credentials -g $(RESOURCE_GROUP) -n $(CLUSTER)'
 
       - script: |
           kubectl argo rollouts promote application
